@@ -1,5 +1,5 @@
 /* Cache Simulator
- * Authors: Theodore Bieber (tjbieber), jlhonicker
+ * Authors: Theodore Bieber (tjbieber), James Honicker (jlhonicker)
 */
 #include "stdio.h"
 #include "cachelab.h"
