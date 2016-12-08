@@ -1,15 +1,12 @@
 /* Cache Simulator
- * Authors: tjbieber, jlhonicker
+ * Authors: Theodore Bieber (tjbieber), jlhonicker
 */
 #include "stdio.h"
 #include "cachelab.h"
 #include "stdlib.h"
-
-
 #include "string.h"
 
 void parseValgrind(char *op, char *address, int *size, char *valgrind);
-int hex2int(char *hex);
 
 int main(int argc, char *argv[]) {
 
@@ -104,7 +101,7 @@ int main(int argc, char *argv[]) {
 	int length = 30;
 	char *line = malloc(length);
 	
-
+	// just to get rid of warnings for now
 	line = line;
 	blocks = blocks;
 	associativity = associativity;
@@ -137,16 +134,6 @@ int main(int argc, char *argv[]) {
 	printSummary(hits, misses, evictions);
     return 0;
 }
-
-/*
-Valgrind information:
-
-Format: [space]operation address,size
-I  0400d7d4,8
- M 0421c7f0,4
- L 04f6b868,8
- S 7ff0005c8,8
-*/
 
 /* Parses a single line of  valgrind information
  * Parameters:
