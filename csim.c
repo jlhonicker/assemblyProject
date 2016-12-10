@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
  * return: a new cacheData with updated summary data (hits, misses, evictions)
 */
 cacheData simulateCache(cache theCache, cacheData cData, address_t address) {
-	int linei; // line index
+	int linecounter; // line index
 	int cacheFull = 1;
 
 	int lines = cData.E; 
@@ -194,18 +194,18 @@ cacheData simulateCache(cache theCache, cacheData cData, address_t address) {
 	int tagSize = (64 - (cData.sets + cData.blocks));
 	address_t cacheLineTag = address >> (cData.sets + cData.blocks);
 	unsigned long long tempaddr = address << (tagSize); 
-	unsigned long long seti = tempaddr >> (tagSize + cData.blocks);
+	unsigned long long setcounter = tempaddr >> (tagSize + cData.blocks);
 
-	cacheSet set = theCache.sets[seti];
+	cacheSet set = theCache.sets[setcounter];
 
-	for(linei = 0; linei < lines; linei++) {
-		cacheSetLine line = set.lines[linei];
+	for(linecounter = 0; linecounter < lines; linecounter++) {
+		cacheSetLine line = set.lines[linecounter];
 
 		if(line.valid) {
 			if(line.tag == cacheLineTag) {
 				line.lastUsed++;
 				cData.hits++;
-				set.lines[linei] = line;
+				set.lines[linecounter] = line;
 			}
 		} else if(!line.valid && cacheFull) {
 			// update flag because we know there's an empty line
@@ -231,10 +231,10 @@ cacheData simulateCache(cache theCache, cacheData cData, address_t address) {
 		set.lines[minUsedIndex].tag = cacheLineTag;
 		set.lines[minUsedIndex].lastUsed = usedLines[1] + 1;
 	} else { // there is an empty spot, so we just need to find it
-		int emptyi = getEmptyLine(set, cData);
-		set.lines[emptyi].tag = cacheLineTag;
-		set.lines[emptyi].valid = 1;
-		set.lines[emptyi].lastUsed = usedLines[1] + 1;
+		int emptycounter = getEmptyLine(set, cData);
+		set.lines[emptycounter].tag = cacheLineTag;
+		set.lines[emptycounter].valid = 1;
+		set.lines[emptycounter].lastUsed = usedLines[1] + 1;
 	}
 	free(usedLines);
 	return cData;
@@ -274,17 +274,17 @@ cache generateCache(long long sets, int lines, long long blockSize) {
 	generatedCache.sets = (cacheSet *) malloc(sizeof(cacheSet) * sets);
 	
 	// allocate the space for all of the sets' lines
-	int seti; // set index
-	int linei; // line index
-	for(seti = 0; seti < sets; seti++) {
+	int setcounter; // set index
+	int linecounter; // line index
+	for(setcounter = 0; setcounter < sets; setcounter++) {
 		set.lines = (cacheSetLine *) malloc(sizeof(cacheSetLine) * lines);
-		generatedCache.sets[seti] = set;
+		generatedCache.sets[setcounter] = set;
 
-		for(linei = 0; linei < lines; linei++) {
+		for(linecounter = 0; linecounter < lines; linecounter++) {
 			line.lastUsed = 0;
 			line.valid = 0;
 			line.tag = 0;
-			set.lines[linei] = line;
+			set.lines[linecounter] = line;
 		}
 	}
 
@@ -296,9 +296,9 @@ cache generateCache(long long sets, int lines, long long blockSize) {
  *     if we were actually creating a real cache it would be needed.
 */
 void freeCache(cache theCache, long long sets, int lines, long long blockSize) {
-	int seti;
-	for(seti = 0; seti < sets; seti++) {
-		cacheSet set = theCache.sets[seti];
+	int setcounter;
+	for(setcounter = 0; setcounter < sets; setcounter++) {
+		cacheSet set = theCache.sets[setcounter];
 		if(set.lines != NULL) {
 			free(set.lines); 
 		}
@@ -344,13 +344,13 @@ int findEvictee(cacheSet set, cacheData cData, int *usedLines) {
 	int minUsedIndex = 0;
 
 	cacheSetLine line;
-	int linei;
+	int linecounter;
 
-	for(linei = 1; linei < lines; linei++) {
-		line = set.lines[linei];
+	for(linecounter = 1; linecounter < lines; linecounter++) {
+		line = set.lines[linecounter];
 
 		if(minUsed > line.lastUsed) {
-			minUsedIndex = linei;
+			minUsedIndex = linecounter;
 			minUsed = line.lastUsed;
 		}
 
